@@ -8,12 +8,11 @@
 
 class USplineTreeComponent;
 
-
 /**
  * Structure to keep variables of a junction of Spline Trees.
  * Keep a pointer to the other spline, it's index & a priority (0 Highest).
 */
-USTRUCT(BlueprintType, Blueprintable)
+USTRUCT(Blueprintable)
 struct FSplineTreeJunctionInfos
 {
 	GENERATED_BODY()
@@ -42,12 +41,19 @@ public:
 	*/
 	UPROPERTY(BlueprintReadWrite)
 	int32 Priority = 0;
+	
+	// ---------- FUNCTIONS ---------- \\
+	
+	// ----- Built-in ----- \\
+	
+public:
+	FSplineTreeJunctionInfos(USplineTreeComponent* OtherSpline = nullptr, int32 OtherIndex = -1, int32 Prio = -1);
 };
 
 /**
  * Just contain an array of FSplineTreeJunctionInfos so a map can have an array as value.
  */
-USTRUCT(BlueprintType, Blueprintable)
+USTRUCT(Blueprintable)
 struct FSplineTreeArray
 {
 	GENERATED_BODY()
@@ -60,7 +66,7 @@ public:
 /**
  * Spline component to allow interconnection between multiple splines of the same type
  */
-UCLASS(Blueprintable, BlueprintType, meta=(BlueprintSpawnableComponent))
+UCLASS(Blueprintable, meta=(BlueprintSpawnableComponent))
 class SPLINETREE_API USplineTreeComponent : public USplineComponent
 {
 	GENERATED_BODY()
@@ -80,5 +86,9 @@ protected:
 	
 	// ---------- FUNCTIONS ---------- \\
 	
+public:
+	USplineTreeComponent();
 	
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category="SplineTreeComponent")
+	void AddJonction(USplineTreeComponent* OtherSpline, int32 OtherIndex, int32 ThisIndex, int32 Priority);
 };
