@@ -14,6 +14,21 @@ FSplineTreeJunctionInfos::FSplineTreeJunctionInfos(USplineTreeComponent* OtherSp
 	Priority = Prio;
 }
 
+// ----- FSplineTreeArray ----- \\
+
+bool FSplineTreeArray::DoesContainSpline(USplineTreeComponent* OtherSpline)
+{
+	for (FSplineTreeJunctionInfos Junction : SplineTreeJunctions)
+	{
+		if (Junction.SplineConnected == OtherSpline)
+		{
+			return true;
+		}
+	}
+	
+	return false;
+}
+
 // ---------- CLASS ---------- \\
 
 // ----- USplineTreeComponent ----- \\
@@ -23,7 +38,7 @@ USplineTreeComponent::USplineTreeComponent()
 	
 }
 
-void USplineTreeComponent::AddJonction_Implementation(USplineTreeComponent* OtherSpline, int32 OtherIndex, int32 ThisIndex, int32 Priority)
+void USplineTreeComponent::AddJonction_Implementation(USplineTreeComponent* OtherSpline, int32 OtherIndex, int32 ThisIndex, int32 ThisPriority, int32 OtherPriority)
 {
 	if (!OtherSpline)
 	{
@@ -35,7 +50,12 @@ void USplineTreeComponent::AddJonction_Implementation(USplineTreeComponent* Othe
 		Junctions.Add(ThisIndex, {});
 	}
 	
-	Junctions[ThisIndex].SplineTreeJunctions.Add({ OtherSpline, OtherIndex, Priority });
+	if (Junctions[ThisIndex].DoesContainSpline(OtherSpline))
+	{
+		return;
+	}
+	
+	Junctions[ThisIndex].SplineTreeJunctions.Add({ OtherSpline, OtherIndex, OtherPriority });
 	OtherSpline->SetLocationAtSplinePoint(
 		OtherIndex,
 		GetLocationAtSplinePoint(ThisIndex, ESplineCoordinateSpace::World),
@@ -47,4 +67,8 @@ void USplineTreeComponent::AddJonction_Implementation(USplineTreeComponent* Othe
 		GetLeaveTangentAtSplinePoint(ThisIndex, ESplineCoordinateSpace::World),
 		ESplineCoordinateSpace::World
 	);
+	
+	OtherSpline->AddJonction(
+		this, ThisIndex, OtherIndex, ThisPriority, OtherPriority
+		);
 }

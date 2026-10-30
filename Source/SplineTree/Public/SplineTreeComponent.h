@@ -61,6 +61,8 @@ struct FSplineTreeArray
 public:
 	UPROPERTY(BlueprintReadWrite)
 	TArray<FSplineTreeJunctionInfos> SplineTreeJunctions;
+	
+	bool DoesContainSpline(USplineTreeComponent* OtherSpline);
 };
 
 /**
@@ -90,5 +92,5 @@ public:
 	USplineTreeComponent();
 	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category="SplineTreeComponent")
-	void AddJonction(USplineTreeComponent* OtherSpline, int32 OtherIndex, int32 ThisIndex, int32 Priority);
+	void AddJonction(USplineTreeComponent* OtherSpline, int32 OtherIndex, int32 ThisIndex, int32 ThisPriority, int32 OtherPriority);
 };
